@@ -1,13 +1,20 @@
 const path = require('path');
-const SvgGlobaldefsWebpackPlugin = require('../../src/index.js');
+const SVGSpritemapPlugin = require('svg-spritemap-webpack-plugin');
+const SVGGlobalDefsWebpackPlugin = require('../../src/index.js');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: path.join(__dirname,'src/index.js'),
+  mode: 'development',
   output: {
     path: path.join(__dirname, 'example_dist'),
     filename: '[name].chunk.js',
   },
   plugins: [
-    new SvgGlobaldefsWebpackPlugin()
+    new SVGSpritemapPlugin(path.join(__dirname, 'src/assets/*.svg'),{
+      output: {
+        filename: path.join(__dirname,'src/assets/sprite.svg')
+      }
+    }),
+    new SVGGlobalDefsWebpackPlugin(path.join(__dirname,'src/assets/sprite.svg'))
   ]
 };
