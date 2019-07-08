@@ -1,0 +1,25 @@
+{
+  "name": "svg-globaldefs-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Turns svg symbol-level defs into global defs",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/querocourses/svg-globaldefs-webpack-plugin.git"
+  },
+  "author": "Thiago Brandão",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/querocourses/svg-globaldefs-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/querocourses/svg-globaldefs-webpack-plugin#readme",
+  "devDependencies": {
+    "@webpack-cli/generate-plugin": "^0.1.8",
+    "bluebird": "^3.5.5",
+    "webpack-cli": "^3.3.5",
+    "webpack-defaults": "^4.0.0"
+  }
+}
