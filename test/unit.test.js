@@ -8,14 +8,19 @@ const attributeNamePrefix = "@_";
 
 describe('SVGGlobalDefsWebpackPlugin', () => {
   beforeEach(() => {
-    plugin = new SVGGlobalDefsWebpackPlugin(getSvgFixture('old'), {
-      attributes: attributes,
-      attributeNamePrefix: attributeNamePrefix
+    plugin = new SVGGlobalDefsWebpackPlugin({
+      files: getSvgFixture('old'),
+      options: {
+        attributes: attributes,
+        attributeNamePrefix: attributeNamePrefix
+      }
     });
   });
 
   test('#createAttributesMemoizer', () => {
-    expect(plugin.createAttributesMemoizer()).toEqual({ linearGradient: { defs: [], ids: [] } });
+    expect(plugin.createAttributesMemoizer()).toEqual({
+      linearGradient: { defs: [], ids: [] }
+    });
   });
 
   describe('#addToDefs', () => {

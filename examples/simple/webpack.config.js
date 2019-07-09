@@ -15,6 +15,8 @@ module.exports = {
         filename: path.join(__dirname, 'src/assets/sprite.svg')
       }
     }),
-    new SVGGlobalDefsWebpackPlugin(path.join(__dirname, 'src/assets/sprite.svg'))
+    new SVGGlobalDefsWebpackPlugin({
+      files: path.join(__dirname, 'src/assets/sprite.svg')
+    })
   ]
 };

@@ -4,7 +4,7 @@ const x2jParser = require("fast-xml-parser");
 const j2xParser = require("fast-xml-parser").j2xParser;
 
 module.exports = class SVGGlobalDefsWebpackPlugin {
-  constructor(files, options) {
+  constructor({files, options}) {
     this.files = [];
 
     if (Array.isArray(files)) {
@@ -110,9 +110,9 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
   }
 
   addFile(file) {
-    glob(file, (err, path) => {
+    glob(file, (err, paths) => {
       if (!err) {
-        this.files.push(path);
+        this.files.push(...paths);
       }
     });
   }

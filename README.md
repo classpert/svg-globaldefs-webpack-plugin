@@ -24,7 +24,9 @@ module.exports = {
         path.resolve(__dirname, 'svgs/icons/*.svg'), 
         path.resolve(__dirname, 'svgs/sprite.svg')
       ],
-      attributes: ['linearGradient', 'mask', 'clipPath']
+      options: {
+        attributes: ['linearGradient', 'mask', 'clipPath']
+      }      
     })
   ]
 }
