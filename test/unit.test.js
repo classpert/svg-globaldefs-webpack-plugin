@@ -23,7 +23,7 @@ describe('SVGGlobalDefsWebpackPlugin', () => {
     });
   });
 
-  describe('#addToDefs', () => {
+  describe('#addToGlobalDefs', () => {
     var memoizer = undefined;
 
     beforeEach(() => {
@@ -31,9 +31,9 @@ describe('SVGGlobalDefsWebpackPlugin', () => {
     });
 
     test('it does not add duplicates based on id', () => {
-      plugin.addToDefs({ [`${attributeNamePrefix}id`]: 666 }, "linearGradient", memoizer);
-      plugin.addToDefs({ [`${attributeNamePrefix}id`]: 666 }, "linearGradient", memoizer);
-      plugin.addToDefs({ [`${attributeNamePrefix}id`]: 9999 }, "linearGradient", memoizer);
+      plugin.addToGlobalDefs({ [`${attributeNamePrefix}id`]: 666 }, "linearGradient", memoizer);
+      plugin.addToGlobalDefs({ [`${attributeNamePrefix}id`]: 666 }, "linearGradient", memoizer);
+      plugin.addToGlobalDefs({ [`${attributeNamePrefix}id`]: 9999 }, "linearGradient", memoizer);
 
       expect(memoizer.linearGradient.defs).toEqual([{ [`${attributeNamePrefix}id`]: 666 }, { [`${attributeNamePrefix}id`]: 9999 }]);
       expect(memoizer.linearGradient.ids).toEqual([666, 9999]);

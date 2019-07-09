@@ -75,17 +75,41 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
   }
 
   processSymbol(symbol, memoizer) {
+    // if symbol has inner defs
+    if(symbol.defs) {
+      for (const key in symbol.defs) {
+        if (symbol.defs.hasOwnProperty(key)) {
+          const value = symbol.defs[key];
+
+          if(symbol[key] == null) {
+            symbol[key] = [];
+          }
+
+          if(typeof(symbol[key]) === 'object' && Object.keys(symbol[key]).length) {
+            symbol[key] = [ symbol[key] ];
+          }
+
+          if(Array.isArray(value)) {
+            symbol[key].push(...value);
+          } else {
+            symbol[key].push(value);
+          }
+        }
+      }
+      delete(symbol.defs);
+    }
+
     for (let j = 0; j < this.options.attributes.length; j++) {
       const attributeName = this.options.attributes[j];
-      const attributeValue = symbol[attributeName];
+      var attributeValue = symbol[attributeName];
 
       if (attributeValue) {
         if (Array.isArray(attributeValue)) {
           for (let j = 0; j < attributeValue.length; j++) {
-            this.addToDefs(attributeValue[j], attributeName, memoizer);
+            this.addToGlobalDefs(attributeValue[j], attributeName, memoizer);
           }
         } else {
-          this.addToDefs(attributeValue, attributeName, memoizer);
+          this.addToGlobalDefs(attributeValue, attributeName, memoizer);
         }
 
         delete (symbol[attributeName]);
@@ -100,7 +124,7 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
     }, {});
   }
 
-  addToDefs(value, key, memoizer) {
+  addToGlobalDefs(value, key, memoizer) {
     const id = value[`${this.options.attributeNamePrefix}id`];
 
     if (id == null || memoizer[key].ids.indexOf(id) === -1) {
@@ -111,8 +135,14 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
 
   addFile(file) {
     glob(file, (err, paths) => {
-      if (!err) {
-        this.files.push(...paths);
+      if (err) {
+        console.log(`Could not glob ${file}`);
+      } else {
+        if(paths.length) {
+          this.files.push(...paths);
+        } else {
+          this.files.push(file);
+        }
       }
     });
   }
