@@ -78,15 +78,28 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
     // if symbol has inner defs
     if(symbol.defs) {
       for (const key in symbol.defs) {
-        if (symbol.defs.hasOwnProperty(key)) {
+        // key is not an attribute of <defs> tag
+        if (symbol.defs.hasOwnProperty(key) && !key.startsWith(this.options.attributeNamePrefix,0)) {
           const value = symbol.defs[key];
 
           if(symbol[key] == null) {
             symbol[key] = [];
           }
 
-          if(typeof(symbol[key]) === 'object' && Object.keys(symbol[key]).length) {
-            symbol[key] = [ symbol[key] ];
+          if(typeof(symbol[key]) === 'object') {
+            if(Object.keys(symbol[key]).length) {
+              symbol[key] = [ symbol[key] ];
+            } else {
+              symbol[key] = [];
+            }
+          }
+
+          if(typeof(symbol[key]) == "string") {
+            if(symbol[key].length) {
+              symbol[key] = [ symbol[key] ];
+            } else {
+              symbol[key] = [];
+            }
           }
 
           if(Array.isArray(value)) {
