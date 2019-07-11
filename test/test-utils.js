@@ -29,6 +29,26 @@ function getFixture(fixtureName) {
 
 /**
  *
+ * @param {string} svgFixtureName
+ * @returns {string} Absolute path of an svg file
+ */
+function getSvgFixture(fixtureName) {
+	return path.resolve(unitTestFixtures, `${fixtureName}.svg`);
+}
+
+/**
+ *
+ * @param {string} xmlString
+ * @returns {string} xmlString with whitespace between tags removed
+ */
+function removeXmlWhitespace(xmlString) {
+	xmlString = xmlString.replace(/>\s*/g, '>');  // Replace "> " with ">"
+	xmlString = xmlString.replace(/\s*</g, '<');  // Replace "< " with "<"
+	return xmlString;
+}
+
+/**
+ *
  *
  * @param {Object} withOptions - Loader Options
  * @returns {{loader: string, options: Object}}
@@ -79,4 +99,13 @@ async function runWebpackExampleInMemory(exampleName) {
 	};
 }
 
-export { getExampleConfig, runWebpackExampleInMemory, fs, getFixtureResource, getLoader, getFixture };
+export {
+	getExampleConfig,
+	runWebpackExampleInMemory,
+	fs,
+	getFixtureResource,
+	getLoader,
+	getFixture,
+	getSvgFixture,
+	removeXmlWhitespace
+};
