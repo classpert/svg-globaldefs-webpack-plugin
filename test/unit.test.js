@@ -17,17 +17,11 @@ describe('SVGGlobalDefsWebpackPlugin', () => {
     });
   });
 
-  test('#createAttributesMemoizer', () => {
-    expect(plugin.createAttributesMemoizer()).toEqual({
-      linearGradient: { defs: [], ids: [] }
-    });
-  });
-
   describe('#addToGlobalDefs', () => {
     var memoizer = undefined;
 
     beforeEach(() => {
-      memoizer = plugin.createAttributesMemoizer();
+      memoizer = {};
     });
 
     test('it does not add duplicates based on id', () => {

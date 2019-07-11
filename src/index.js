@@ -28,7 +28,9 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
       attributeNamePrefix: this.options.attributeNamePrefix
     });
 
-    const memoizer = this.createAttributesMemoizer();
+    // memoizer to remember
+    // added defs based on id
+    const memoizer = {};
 
     if (Array.isArray(svgJson.svg.symbol)) {
       for (let i = 0; i < svgJson.svg.symbol.length; i++) {
@@ -77,35 +79,18 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
   processSymbol(symbol, memoizer) {
     // if symbol has inner defs
     if(symbol.defs) {
-      for (const key in symbol.defs) {
-        // key is not an attribute of <defs> tag
-        if (symbol.defs.hasOwnProperty(key) && !key.startsWith(this.options.attributeNamePrefix,0)) {
-          const value = symbol.defs[key];
+      for (const localDefName in symbol.defs) {
+        // localDefName is not an attribute of <defs> tag
+        if (symbol.defs.hasOwnProperty(localDefName) && !localDefName.startsWith(this.options.attributeNamePrefix,0)) {
+          const localDefValue = symbol.defs[localDefName];
 
-          if(symbol[key] == null) {
-            symbol[key] = [];
-          }
-
-          if(typeof(symbol[key]) === 'object') {
-            if(Object.keys(symbol[key]).length) {
-              symbol[key] = [ symbol[key] ];
-            } else {
-              symbol[key] = [];
+          // localDefValue might be an array, object or string
+          if(Array.isArray(localDefValue)) {
+            for (let i = 0; i < localDefValue.length; i++) {
+              this.addToGlobalDefs(localDefValue[i], localDefName, memoizer);
             }
-          }
-
-          if(typeof(symbol[key]) == "string") {
-            if(symbol[key].length) {
-              symbol[key] = [ symbol[key] ];
-            } else {
-              symbol[key] = [];
-            }
-          }
-
-          if(Array.isArray(value)) {
-            symbol[key].push(...value);
           } else {
-            symbol[key].push(value);
+            this.addToGlobalDefs(localDefValue, localDefName, memoizer);
           }
         }
       }
@@ -130,19 +115,22 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
     }
   }
 
-  createAttributesMemoizer() {
-    return this.options.attributes.reduce((acc, val) => {
-      acc[val] = { defs: [], ids: [] };
-      return acc;
-    }, {});
-  }
-
   addToGlobalDefs(value, key, memoizer) {
     const id = value[`${this.options.attributeNamePrefix}id`];
 
-    if (id == null || memoizer[key].ids.indexOf(id) === -1) {
-      memoizer[key].defs.push(value);
-      id && memoizer[key].ids.push(id);
+    // attr with null ids will be ignored
+    // since they can't be referenced
+    if (!(id == null)) {
+      // add entry to memoizer if doesn't exist
+      if(memoizer[key] == null) {
+        memoizer[key] = { defs: [], ids: [] };
+      }
+
+      // add attr to defs uniquely based on id
+      if(memoizer[key].ids.indexOf(id) === -1) {
+        memoizer[key].defs.push(value);
+        memoizer[key].ids.push(id);
+      }
     }
   }
 
