@@ -1,5 +1,5 @@
 {
-  "name": "svg-globaldefs-webpack-plugin",
+  "name": "@classpert/svg-globaldefs-webpack-plugin",
   "version": "1.0.0",
   "description": "Turns svg symbol-level defs into global defs",
   "main": "src/index.js",
@@ -28,5 +28,9 @@
   },
   "peerDependencies": {
     "webpack": "^4.0.0"
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
   }
 }
