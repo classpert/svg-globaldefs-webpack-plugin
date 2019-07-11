@@ -16,10 +16,10 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
       this.addFile(files);
     }
 
-    this.options = Object.assign(options || {}, {
+    this.options = Object.assign({
       attributes: ["linearGradient"],
       attributeNamePrefix: "@_"
-    });
+    }, options || {});
   }
 
   transform(originalSvg) {
