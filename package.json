@@ -1,6 +1,6 @@
 {
   "name": "@classpert/svg-globaldefs-webpack-plugin",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Turns svg symbol-level defs into global defs",
   "main": "src/index.js",
   "scripts": {
@@ -19,9 +19,10 @@
   "devDependencies": {
     "@webpack-cli/generate-plugin": "^0.1.8",
     "bluebird": "^3.5.5",
-    "svg-spritemap-webpack-plugin": "^3.3.5",
+    "svg-spritemap-webpack-plugin": "^3.3.6",
     "webpack-cli": "^3.3.5",
-    "webpack-defaults": "^4.0.0"
+    "webpack-defaults": "^4.0.0",
+    "xml-formatter": "^1.1.0"
   },
   "dependencies": {
     "fast-xml-parser": "^3.12.16",

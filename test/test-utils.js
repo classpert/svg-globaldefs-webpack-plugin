@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import Promise from 'bluebird';
 import MemoryFs from 'memory-fs';
+import XMLFormatter from 'xml-formatter';
 
 const fs = new MemoryFs();
 const unitTestFixtures = path.resolve(__dirname, 'fixtures');
@@ -38,13 +39,16 @@ function getSvgFixture(fixtureName) {
 
 /**
  *
- * @param {string} xmlString
- * @returns {string} xmlString with whitespace between tags removed
+ * @param {string} xml
+ * @returns {string} formatted xml
  */
-function removeXmlWhitespace(xmlString) {
+function formatXML(xml) {
+	// remove whitespace
+	let xmlString = xml;
 	xmlString = xmlString.replace(/>\s*/g, '>');  // Replace "> " with ">"
 	xmlString = xmlString.replace(/\s*</g, '<');  // Replace "< " with "<"
-	return xmlString;
+
+	return XMLFormatter(xmlString,{indentation: '  '});
 }
 
 /**
@@ -107,5 +111,5 @@ export {
 	getLoader,
 	getFixture,
 	getSvgFixture,
-	removeXmlWhitespace
+	formatXML
 };

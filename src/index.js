@@ -79,22 +79,15 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
   processSymbol(symbol, memoizer) {
     // if symbol has inner defs
     if(symbol.defs) {
-      for (const localDefName in symbol.defs) {
-        // localDefName is not an attribute of <defs> tag
-        if (symbol.defs.hasOwnProperty(localDefName) && !localDefName.startsWith(this.options.attributeNamePrefix,0)) {
-          const localDefValue = symbol.defs[localDefName];
+      this.processDefs(symbol.defs, memoizer);
+      this.cleanUpNode(symbol, "defs");
+    }
 
-          // localDefValue might be an array, object or string
-          if(Array.isArray(localDefValue)) {
-            for (let i = 0; i < localDefValue.length; i++) {
-              this.addToGlobalDefs(localDefValue[i], localDefName, memoizer);
-            }
-          } else {
-            this.addToGlobalDefs(localDefValue, localDefName, memoizer);
-          }
-        }
-      }
-      delete(symbol.defs);
+    // if symbol has inner groups
+    if(symbol.g) {
+      const groupDefs = this.processGroups(symbol.g, []);
+      this.processDefs(groupDefs, memoizer);
+      this.cleanUpNode(symbol, "g");
     }
 
     for (let j = 0; j < this.options.attributes.length; j++) {
@@ -110,13 +103,100 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
           this.addToGlobalDefs(attributeValue, attributeName, memoizer);
         }
 
-        delete (symbol[attributeName]);
+        delete(symbol[attributeName]);
       }
     }
   }
 
-  addToGlobalDefs(value, key, memoizer) {
-    const id = value[`${this.options.attributeNamePrefix}id`];
+  processGroups(node, defs) {
+    if(Array.isArray(node)){
+      return node.map(innerNode => {
+        return this.processGroups(innerNode, defs);
+      }).reduce((acc, defs) => {
+        acc.push(...defs);
+        return acc;
+      }, []);
+    } else {
+      for (const key in node) {
+        if (node.hasOwnProperty(key)) {
+          const element = node[key];
+
+          if(key === "defs") {
+            if(Array.isArray(element)) {
+              defs.push(...element);
+            } else {
+              defs.push(element);
+            }
+
+            delete(node[key]);
+          }
+
+          // { linearGradient: [ ... ]  }
+          if(this.options.attributes.indexOf(key) > -1) {
+            defs.push({[key]: element});
+            delete(node[key]);
+          }
+
+          if(key === "g") {
+            this.processGroups(node.g, defs);
+
+            if(this.isEmptyNode(node.g)) {
+              delete(node.g);
+            }
+          }
+        }
+      }
+
+      return defs;
+    }
+  }
+
+  processDefs(node, memoizer) {
+    if(Array.isArray(node)) {
+      node.forEach(innerNode => {
+        this.processDefs(innerNode, memoizer);
+      });
+    } else {
+      for (const localDefName in node) {
+        // localDefName is not an attribute of <defs> tag
+        if (node.hasOwnProperty(localDefName) && !this.isAttribute(localDefName)) {
+          const localDefValue = node[localDefName];
+
+          // localDefValue might be an array, object or string
+          if(Array.isArray(localDefValue)) {
+            for (let i = 0; i < localDefValue.length; i++) {
+              this.addToGlobalDefs(localDefValue[i], localDefName, memoizer);
+            }
+          } else {
+            this.addToGlobalDefs(localDefValue, localDefName, memoizer);
+          }
+
+          delete(node[localDefName]);
+        }
+      }
+    }
+  }
+
+  cleanUpNode(rootNode, childNodeName) {
+    if(rootNode[childNodeName]) {
+      if(Array.isArray(rootNode[childNodeName])){
+        rootNode[childNodeName] = rootNode[childNodeName].filter((node) => {
+          return !this.isEmptyNode(node);
+        })
+
+        rootNode[childNodeName].map((childNode) => {
+          this.cleanUpNode(childNode, childNodeName);
+        });
+      } else {
+        if(this.isEmptyNode(rootNode[childNodeName])) {
+          delete(rootNode[childNodeName]);
+        }
+      }
+    }
+  }
+
+  addToGlobalDefs(node, key, memoizer) {
+    const id = node[`${this.options.attributeNamePrefix}id`];
 
     // attr with null ids will be ignored
     // since they can't be referenced
@@ -128,7 +208,7 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
 
       // add attr to defs uniquely based on id
       if(memoizer[key].ids.indexOf(id) === -1) {
-        memoizer[key].defs.push(value);
+        memoizer[key].defs.push(node);
         memoizer[key].ids.push(id);
       }
     }
@@ -146,6 +226,17 @@ module.exports = class SVGGlobalDefsWebpackPlugin {
         }
       }
     });
+  }
+
+  isEmptyNode(node) {
+    return (
+      (node == '') ||
+      (Object.keys(node).filter((node) => !this.isAttribute(node)).length === 0 && node.constructor === Object)
+    );
+  }
+
+  isAttribute(value) {
+    return value.startsWith(this.options.attributeNamePrefix,0);
   }
 
   apply(compiler) {

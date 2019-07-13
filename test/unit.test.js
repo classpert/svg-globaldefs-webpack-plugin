@@ -1,9 +1,14 @@
 import fs from 'fs';
-import { removeXmlWhitespace, getSvgFixture } from '../test/test-utils';
+import { formatXML, getSvgFixture } from '../test/test-utils';
 import SVGGlobalDefsWebpackPlugin from '../src/index.js';
 
 var plugin = undefined;
-const attributes = ["linearGradient"];
+const attributes = [
+  "linearGradient",
+  "radialGradient",
+  "clipPath",
+  "mask"
+];
 const attributeNamePrefix = "@_";
 
 describe('SVGGlobalDefsWebpackPlugin', () => {
@@ -34,11 +39,34 @@ describe('SVGGlobalDefsWebpackPlugin', () => {
     })
   });
 
-  test("#transform", () => {
-    const oldSvg = fs.readFileSync(getSvgFixture('old'), 'utf8').toString();
-    const newSvg = fs.readFileSync(getSvgFixture('new'), 'utf8').toString();
-    const transformedSvg = plugin.transform(oldSvg);
+  test("#processGroups", () => {
+    // <g>
+    //  <g><defs>1</defs></g>
+    //  <g><b>2</b><defs>3</defs></g>
+    //  <defs>4</defs>
+    // </g>
+    let defs = [];
+    const node = {
+      g: {
+        g: [
+          { defs: 1 },
+          { b: 2, defs: 3 }
+        ],
+        defs: 4
+      }
+    };
 
-    expect(transformedSvg).toEqual(removeXmlWhitespace(newSvg));
-  })
+    plugin.processGroups(node, defs);
+    expect(defs).toEqual([1, 3, 4]);
+  });
+
+  describe("#transform", () => {
+    test("3ds_max svg", () => {
+      const oldSvg = fs.readFileSync(getSvgFixture('old/3ds_max'), 'utf8').toString();
+      const newSvg = fs.readFileSync(getSvgFixture('new/3ds_max'), 'utf8').toString();
+      const transformedSvg = plugin.transform(oldSvg);
+
+      expect(formatXML(transformedSvg)).toEqual(formatXML(newSvg));
+    });
+  });
 });
