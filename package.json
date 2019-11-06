@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/querocourses/svg-globaldefs-webpack-plugin.git"
+    "url": "git+https://github.com/classpert/svg-globaldefs-webpack-plugin.git"
   },
   "author": "Thiago Brandão",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/querocourses/svg-globaldefs-webpack-plugin/issues"
+    "url": "https://github.com/classpert/svg-globaldefs-webpack-plugin/issues"
   },
-  "homepage": "https://github.com/querocourses/svg-globaldefs-webpack-plugin#readme",
+  "homepage": "https://github.com/classpert/svg-globaldefs-webpack-plugin#readme",
   "devDependencies": {
     "@webpack-cli/generate-plugin": "^0.1.8",
     "bluebird": "^3.5.5",
