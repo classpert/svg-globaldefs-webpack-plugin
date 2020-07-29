@@ -4,8 +4,7 @@
   "description": "Turns svg symbol-level defs into global defs",
   "main": "src/index.js",
   "scripts": {
-    "test": "npx jest",
-    "publish": "npm publish --access public"
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
