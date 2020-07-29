@@ -1,7 +1,5 @@
 const glob = require("glob");
 const { RawSource } = require("webpack-sources");
-const x2jParser = require("fast-xml-parser");
-const j2xParser = require("fast-xml-parser").j2xParser;
 const { js2xml, xml2js } = require("xml-js");
 const R = require("ramda");
 
