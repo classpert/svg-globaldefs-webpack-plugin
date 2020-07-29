@@ -1,10 +1,11 @@
 {
   "name": "@classpert/svg-globaldefs-webpack-plugin",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Turns svg symbol-level defs into global defs",
   "main": "src/index.js",
   "scripts": {
-    "test": "npx jest"
+    "test": "npx jest",
+    "release": "mv .npmrc .npmrcc && npm publish --access public && mv .npmrcc .npmrc && npm publish --access public"
   },
   "repository": {
     "type": "git",
